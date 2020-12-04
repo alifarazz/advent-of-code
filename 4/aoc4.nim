@@ -1,4 +1,4 @@
-import re, os, sugar, strutils, sequtils
+import os, sugar, strutils, sequtils
 
 const requiredFields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
 const eyeColors = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
@@ -23,12 +23,12 @@ func passportIsValid2(passport: seq[seq[string]]): bool =
         else:
           checkInt(value[0 .. ^3], 59, 76)
       of "hcl":
-        match(value, re"#([0-9a-f]{6})")
+        value.len == 7 and value[0] == '#' and value[1 .. ^1].all(x => ('0' <=
+            x and x <= '9') or ('a' <= x and x <= 'f'))
       of "ecl":
         eyeColors.map(x => x == value).anyIt(it)
       of "pid":
-        discard parseInt(value)
-        value.len == 9
+        value.len == 9 and parseInt(value) < 1_000_000_0000
       else:
         true
   try:
