@@ -1,6 +1,6 @@
 import os, sugar, sequtils, algorithm
 
-const columnCount = (3, 5)[0]
+const columnCount = 3
 
 func binSearch(str: string, leftChar: char): int =
   var
@@ -19,7 +19,8 @@ when isMainModule:
   let ids = toSeq(path.lines).map(line =>
     binSearch(line[0 .. ^(columnCount + 1)], 'F') shl columnCount +
     binSearch(line[^(columnCount) .. ^1], 'L')).sorted()
-  echo ids.max()
+  echo ids[^1]
   for i in 0 .. ids.len - 2:
     if ids[i] + 1 != ids[i + 1]:
       echo ids[i] + 1
+      break
