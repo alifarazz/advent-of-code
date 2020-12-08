@@ -7,4 +7,4 @@ Running time order (n = total instructions in `input`, m = number of `jmp` and `
 - Part2: ~~BigOh(n * m)~~ BigOh(n)
 #### Hacks
 - In part 2, ~~running the machine for m times isn't probably the most efficient solution. ever.~~ O(N) by the power of Dynamic Programming!
-You only change one instruction but all other are the same. Any instruction you see after the one you changed, except for the corrupted instruction, will not terminate . In case it terminates, you've found the corrupted instruction!
+You only change one instruction but all others are the same. Any instruction you see after the one you've changed, except for the one corrupted instruction, will not terminate. In case it terminates, then you've found the corrupted instruction!
