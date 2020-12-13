@@ -1,4 +1,4 @@
-import sugar, strutils, sequtils, math
+import strutils, sequtils, math
 
 func saneMod(n, M: int): int = ((n mod M) + M) mod M
 
@@ -23,25 +23,25 @@ when isMainModule:
   let input = stdin.readAll()[0..^2].splitLines
   let departTime = input[0].parseInt
   let timesStr = input[1].split ","
-  let times = timesStr.filter(x => x != "x").map(parseInt)
+  let times = timesStr.filterIt(it != "x").map(parseInt)
 
   block part1:
-    let timeMods = times.map(t => t - departTime.saneMod t)
+    let timeMods = times.mapIt(it - departTime.saneMod it)
     let minIdx = timeMods.minIndex
     echo timeMods[minIdx] * times[minIdx]
 
   block part2:
-    var timeMods = newSeq[int]()
-    var d = 0
-    for time in timesStr:
+    var timeMods = newSeq[int](times.len)
+    var idx: int
+    for i, time in timesStr:
       if time[0] != 'x':
-        timeMods.add d
-      dec d
+        timeMods[idx] = -i
+        inc idx
 
     # Chinese Remainder Theorem
-    let M = times.prod()
-    proc cht(y, d: int): int =
+    let M = times.prod
+    proc chrt(y, d: int): int =
       let b = M div d
       b * y * multInv(b, d)
-    let x = zip(timeMods, times).map(x => cht(x[0], x[1])).sum
+    let x = zip(timeMods, times).mapIt(chrt(it[0], it[1])).sum
     echo x.saneMod M
