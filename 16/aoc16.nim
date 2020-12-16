@@ -1,4 +1,4 @@
-import strutils, sequtils, re, sugar, sets, math
+import strutils, sequtils, re, sets, math
 import neo
 
 type Rule = object
@@ -32,8 +32,8 @@ when isMainModule:
     rules.add Rule(bounds: [bounds[0], bounds[1], bounds[2], bounds[3]],
         name: s)
 
-  let tickets = input[2].split("\n")[1 .. ^1].map(s => s.split(",").map(parseInt))
-  let invalidTickets = tickets.map(x => ticketIsLegal(x, rules))
+  let tickets = input[2].split("\n")[1 .. ^1].mapIt(it.split(",").map(parseInt))
+  let invalidTickets = tickets.mapIt(it.ticketIsLegal rules)
   echo invalidTickets.sum # part 1
 
   let validIdxs = vector(invalidTickets.zip(toSeq(
