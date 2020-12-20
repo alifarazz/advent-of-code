@@ -10,18 +10,18 @@ when isMainModule:
     let ruleNumber = tks[0].parseInt
     case tks[1][0]:
       of '"':
-        pegGrammer = pegGrammer & "\nr" & $ruleNumber & " <- \'" & $tks[1][1] & "\'"
+        pegGrammer &= "\nr" & $ruleNumber & " <- \'" & $tks[1][1] & "\'"
       else:
         let rules = tks[1].split(" | ").mapIt(it.split)
-        pegGrammer = pegGrammer & "\nr" & $ruleNumber & " <- "
-        pegGrammer = pegGrammer & "("
+        pegGrammer &= "\nr" & $ruleNumber & " <- "
+        pegGrammer &= "("
         for rule in rules:
-          pegGrammer = pegGrammer & "("
+          pegGrammer &= "("
           for ruleNum in rule:
-            pegGrammer = pegGrammer & "r" & $ruleNum & " "
+            pegGrammer &= "r" & $ruleNum & " "
           pegGrammer[^1] = ')'
-          pegGrammer = pegGrammer & " "
-          pegGrammer = pegGrammer & "/ "
+          pegGrammer &= " "
+          pegGrammer &= "/ "
         pegGrammer[^2] = ')'
   # echo pegGrammer
   let pegAst = pegGrammer.peg
