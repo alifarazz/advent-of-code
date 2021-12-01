@@ -1,8 +1,8 @@
-import std/strutils
+from std/strutils import parseInt, splitLines
 from std/sequtils import map
 
 when isMainModule:
-  let v = stdin.readAll.split[0..^2].map(parseInt)
+  let v = stdin.readAll.splitLines[0..^2].map(parseInt)
   var c1, c2: int
   for i in 1..<v.len:
     if v[i - 1] < v[i]:
