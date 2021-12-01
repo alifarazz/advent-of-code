@@ -8,6 +8,6 @@ when isMainModule:
     if v[i - 1] < v[i]:
       inc c1
   for i in 3..<v.len:
-    if v[i - 3] + v[i - 2] + v[i - 1] < v[i - 2] + v[i - 1] + v[i]:
+    if v[i - 3] < v[i]:
       inc c2
   echo c1, '\n', c2
