@@ -1,6 +1,3 @@
-(defn zip [& colls]
-  (partition (count colls) (apply interleave colls)))
-
 (defn has-peak [pair]
   (< 0 (reduce - pair)))
 
@@ -8,9 +5,10 @@
   (count (filter identity coll)))
 
 (defn count-peaks [coll dist]
-  (count-identity (map has-peak
-                       (zip (drop dist coll)
-                            coll))))
+  (->> (map vector (drop dist coll) coll)
+       (map has-peak)
+       count-identity))
+
 (def v
   (map #(Integer/parseInt %)
        (clojure.string/split-lines (slurp "input"))))
