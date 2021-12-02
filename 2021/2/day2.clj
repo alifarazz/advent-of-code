@@ -19,16 +19,16 @@
           (* (get-sign-y dir)
              amnt))))
 
-(def v
+(defn get-v []
   (->> (slurp "input")
        (str/split-lines)
        (map convert-depth)))
 
-(defn p1 []
+(defn p1 [v]
   (* (reduce + (map first v))
      (reduce + (map #(nth % 1) v))))
 
-(defn p2 []
+(defn p2 [v]
   (loop [v     v
          depth 0
          horiz 0
@@ -43,6 +43,7 @@
                (+ horiz x)
                (+ aim y))))))
 
-(time (let [a1 (p1)
-            a2 (p2)]
+(time (let [v  (get-v)
+            a1 (p1 v)
+            a2 (p2 v)]
         (println a1 a2)))
