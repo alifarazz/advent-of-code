@@ -25,8 +25,6 @@ proc makeNode(s: string): Node =
   new result
   if s.len == 1:
     result.data = s.parseInt
-  # elif s[0] == 'z':
-  #   result.data = s[1..^1].parseInt
   else:
     var
       spIdx = s.getSplitIdx
@@ -62,9 +60,8 @@ proc split(me: Node): bool =
     me.ri.data = me.data - me.le.data
     me.data = -1
     result = true
-  else:
-    if me.le != nil: result = me.le.split()
-    if result == false and me.ri != nil: result = me.ri.split()
+  elif me.le != nil and me.ri != nil:
+    result = me.le.split() or me.ri.split()
 
 proc nextInorder(me: Node): Node =
   var me = me
@@ -105,17 +102,8 @@ proc explode(me: Node, depth: int = 0): bool =
       me.ri = nil
       me.data = 0
       result = true
-  else:
-    if me.le != nil: result = me.le.explode(depth + 1)
-    if result == false and me.ri != nil: result = me.ri.explode(depth + 1)
-
-proc sanitized(me: Node): bool =
-  if me.data != -1:
-     result = me.data >= 0 and me.data < 10 and me.le == nil and me.ri == nil
-  else:
-    if me.le == nil or me.ri == nil:
-      return false
-    result = me.le.parent == me and me.ri.parent == me and me.le.sanitized and me.ri.sanitized
+  elif me.le != nil and me.ri != nil:
+    result = me.le.explode(depth + 1) or me.ri.explode(depth + 1)
 
 proc reduce(a, b: Node): Node =
   result = a + b
@@ -127,8 +115,8 @@ proc magnitude(me: Node): int =
     me.data
   else:
     let
-      l = me.le.magnitude
-      r = me.ri.magnitude
+      l = me.le.magnitude()
+      r = me.ri.magnitude()
     3 * l + 2 * r
 
 proc findMaxMagnitude(roots: openArray[string]): int =
@@ -145,3 +133,13 @@ when isMainModule:
   let roots = v.map(makeNode)
   echo roots.foldl(reduce(a, b)).magnitude, '\n',
        v.findMaxMagnitude
+
+#[
+proc sanitized(me: Node): bool =
+ if me.data != -1:
+    result = me.data >= 0 and me.data < 10 and me.le == nil and me.ri == nil
+ else:
+   if me.le == nil or me.ri == nil:
+     return false
+   result = me.le.parent == me and me.ri.parent == me and me.le.sanitized and me.ri.sanitized
+]#
