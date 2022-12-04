@@ -1,5 +1,38 @@
 #include "utils.h"
 
+#pragma push_macro("assert")
+#undef assert
+#define assert(x) ((void)(x))
+
+struct state init(const char* path) {
+  struct state S;
+  if (path) {
+    S.fd = open(path, O_RDONLY);
+  }else {
+    S.fd = 0; // use stdin
+  }
+  if (S.fd < 0) {
+    S.fd = -1;
+    return S;
+  }
+  
+  if ((S.file_size = get_file_size(S.fd)) <= 0) {
+    S.fd = -2;
+return S;  }
+
+  
+  if (!(S.mem = mmap(NULL, S.file_size, PROT_READ, MAP_PRIVATE, S.fd, 0))) {
+    S.fd = -3;
+return S;    
+  }
+  return S;
+}
+
+void deinit(struct state*s) {
+  assert(munmap(s->mem, s->file_size) == 0);
+  assert(close(s->fd) == 0);
+}
+
 off_t get_file_size(int fd) {
   struct stat st;
 
@@ -45,3 +78,4 @@ ssize_t println_uint64(int fd, size_t num) {
   buffer[len++] = '\n';
   return write(fd, buffer, len);
 }
+#pragma pop_macro("assert")
