@@ -5,8 +5,10 @@ internal inline bool fullcontain(int a, int b, int c, int d) {
   return a <= c && d <= b || c <= a && b <= d;
 }
 internal inline bool overlap(int a, int b, int c, int d) {
-  return a <= c && c <= b && b <= d || c <= a && a <= d && d <= b ||
-         a <= c && d <= b || c <= a && b <= d;
+  // return a <= c && c <= b && b <= d || c <= a && a <= d && d <= b ||
+  //        a <= c && d <= b || c <= a && b <= d;
+
+  return c <= b && a <= d;
 }
 
 int main() {
