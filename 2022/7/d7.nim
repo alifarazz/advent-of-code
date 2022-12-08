@@ -1,4 +1,5 @@
-# do a `nimble install fusion` before compiling
+# do a `$ nimble install fusion` before compiling
+# compile with `$ nim c -d:danger -d:lto --passC:"-march=native" --mm:arc d7.nim` 
 
 import std/[sequtils, strutils, sugar]
 import fusion/matching
