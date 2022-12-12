@@ -25,6 +25,21 @@ typedef double f64;
 
 typedef int bool;
 
+#define U8_MAX  0xFFu
+#define U16_MAX 0xFFFFu
+#define U32_MAX 0xFFFFFFFu
+#define U64_MAX 0xFFFFFFFFFFFFFFu
+
+#define I8_MAX  0x7Fu
+#define I16_MAX 0x7FFFu
+#define I32_MAX 0x7FFFFFFu
+#define I64_MAX 0x7FFFFFFFFFFFFFu
+
+#define U8_MIN  0x80u
+#define U16_MIN 0x8000u
+#define U32_MIN 0x8000000u
+#define U64_MIN 0x80000000000000u
+
 #define internal static
 #define local static
 #define global
@@ -34,7 +49,8 @@ typedef int bool;
 
 #define MAX(a, b)                                                              \
   ({                                                                           \
-    __auto_type _a = (a) __auto_type _b = (b);                                 \
+    __auto_type _a = (a);                                                      \
+    __auto_type _b = (b);                                                      \
     _a > _b ? _a : _b;                                                         \
   })
 
@@ -43,6 +59,20 @@ typedef int bool;
     __auto_type _a = (a);                                                      \
     __auto_type _b = (b);                                                      \
     _a < _b ? _a : _b;                                                         \
+  })
+
+#define ABS(a)                                                                 \
+  ({                                                                           \
+    __auto_type _a = (a);                                                      \
+    _a < 0 ? -_a : _a;                                                         \
+  })
+
+#define CLAMP(x, a, b)                                                         \
+  ({                                                                           \
+    __auto_type __x = (x);                                                     \
+    __auto_type __a = (a);                                                     \
+    __auto_type __b = (b);                                                     \
+    MIN(MAX(__x, __a), __b);                                                   \
   })
 
 struct state {
