@@ -1,34 +1,52 @@
 #include "../utils.c" // unity build
 
+// #define W 4999 // 77
+// #define H 5999 // 41
 #define W 77
 #define H 41
 
-#define STEPS_MAX 0xFFFFFFu // U24_MAX
+#define STEPS_MAX 0xFFFFFFu // == U24_MAX
+// #define STEPS_MAX U32_MAX
 
 typedef struct
 {
   char c;
   u32 d : 24;
+  // u32 d;
 } Cell;
 
+typedef struct
+{
+  u32 i, j;
+} PairU32;
+
+typedef struct
+{
+  PairU32 m[H * W];
+  u64 sz;
+} Queue;
+
 static Cell grid[H + 2][W + 2];
+static Queue Q1, Q2;
 
 void
-Tick()
+Tick(Queue* Qsrc, Queue* Qtrgt)
 {
-  local const struct { int x, y; } displacemnts[] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+  local const struct
+  {
+    int x, y;
+  } displacemnts[] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
 
-  FOR (i, 1, H + 1) {
-    FOR (j, 1, W + 1) {
-      _Pragma("GCC unroll 4") FR (k, 4)
-      {
-        const u64 ii = i + displacemnts[k].x, jj = j + displacemnts[k].y;
-        const char IAmAtHeight = grid[ii][jj].c + 1;
-        if (grid[ii][jj].d != STEPS_MAX && grid[i][j].c <= IAmAtHeight) {
-          const u32 newD = grid[ii][jj].d + 1;
-          const u32 minD = grid[i][j].d < newD ? grid[i][j].d : newD;
-          grid[i][j].d = minD;
-        }
+  FR (qi, Qsrc->sz) {
+    const u32 i = Qsrc->m[qi].i;
+    const u32 j = Qsrc->m[qi].j;
+    _Pragma("GCC unroll 4") FR (k, 4)
+    {
+      const u64 ii = i + displacemnts[k].x, jj = j + displacemnts[k].y;
+      const char IAmAtHeight = grid[i][j].c + 1;
+      if (grid[ii][jj].d == STEPS_MAX && grid[ii][jj].c <= IAmAtHeight) {
+        grid[ii][jj].d = grid[i][j].d + 1;
+        Qtrgt->m[Qtrgt->sz++] = (PairU32){ ii, jj };
       }
     }
   }
@@ -63,28 +81,48 @@ main()
       }
     }
   }
+  const char MountOlympus = 'z' + 2;
+  {
+    FR (i, W + 2)
+      grid[0][i].c = MountOlympus;
+    FOR (i, 1, H + 1)
+      grid[i][W + 1].c = (grid[i][0].c = MountOlympus);
+    FR (i, W + 2)
+      grid[H + 1][i].c = MountOlympus;
+  }
+
+  Queue *Qsrc = &Q1, *Qtrgt = &Q2;
 
   { // silver
-    grid[Si][Sj].c = 'z';
+    grid[Si][Sj].c = MountOlympus;
     grid[Si][Sj].d = 0;
     grid[Ei][Ej].c = 'z' + 1;
-
-    while (grid[Ei][Ej].d == STEPS_MAX) { // O(N**4) LOL!
-      Tick();
-    }
+    Qsrc->m[Qsrc->sz++] = (PairU32){ Si, Sj };
+    do {
+      Qtrgt->sz = 0;
+      Tick(Qsrc, Qtrgt);
+      SWAP(Qsrc, Qtrgt);
+    } while (grid[Ei][Ej].d == STEPS_MAX && Qsrc->sz > 0); // O(N**2)
     println_uint64(1, grid[Ei][Ej].d);
   }
 
   { // gold
-    FOR (i, 1, H + 1) {
+    Qsrc->sz = Qtrgt->sz = 0;
+    FOR (i, 1, H + 1) { // init grid
       FOR (j, 1, W + 1) {
-        grid[i][j].d = grid[i][j].c == 'a' ? 0 : STEPS_MAX;
+        const bool cond = grid[i][j].c == 'a';
+        grid[i][j].d = cond ? 0 : STEPS_MAX;
+        if (cond) {
+          Qsrc->m[Qsrc->sz++] = (PairU32){ i, j };
+        }
       }
     }
-    grid[Si][Sj].c = 'z' + 2;            // Mount Olympus
-    while (grid[Ei][Ej].d == STEPS_MAX) { // O(N**4) LOLOLOLOLOLOLOL!
-      Tick();
-    }
+    grid[Si][Sj].c = MountOlympus;
+    do {
+      Qtrgt->sz = 0;
+      Tick(Qsrc, Qtrgt);
+      SWAP(Qsrc, Qtrgt);
+    } while (grid[Ei][Ej].d == STEPS_MAX && Qsrc->sz > 0); // O(N**2)
     println_uint64(1, grid[Ei][Ej].d);
   }
 
