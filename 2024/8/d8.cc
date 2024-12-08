@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <ranges>
 
 int main()
 {
@@ -23,18 +22,23 @@ int main()
     }
   }
 
+  auto ss = s;
   for (auto xys : antenna_coords) {
     for (size_t i = 0; i < xys.size(); i++) {
-      for (size_t j = i + 1; j < xys.size(); j++) {
-        auto trace_anti = [&](auto anti, auto diff) {
-          auto is_inside = [=](auto xy) {
-            auto row = xy.first, col = xy.second;
-            return 0 <= row && row < rlen && 0 <= col && col < clen;
-          };
-          for (; is_inside(anti);
-               anti = std::make_pair(anti.first + diff.first, anti.second + diff.second))
-            s[anti.first * (clen + 1) + anti.second] = '#';
+      auto trace_anti = [&](auto anti, auto diff) {
+        auto is_inside = [=](auto xy) {
+          auto row = xy.first, col = xy.second;
+          return 0 <= row && row < rlen && 0 <= col && col < clen;
         };
+        if (auto silver_loc = std::make_pair(anti.first + diff.first, anti.second + diff.second);
+            is_inside(silver_loc))
+          s[silver_loc.first * (clen + 1) + silver_loc.second] = '#';
+        for (;
+             is_inside(anti);
+             anti = std::make_pair(anti.first + diff.first, anti.second + diff.second))
+          ss[anti.first * (clen + 1) + anti.second] = '#';
+      };
+      for (size_t j = i + 1; j < xys.size(); j++) {
         auto diff = std::make_pair(xys[i].first - xys[j].first, xys[i].second - xys[j].second);
         trace_anti(xys[i], diff);
         trace_anti(xys[j], decltype(diff) { -diff.first, -diff.second });
@@ -42,7 +46,6 @@ int main()
     }
   }
 
-  std::cout << s;
-  const auto silver = std::count(s.begin(), s.end(), '#');
-  std::cout << silver << std::endl;
+  std::cout << std::ranges::count(s, '#') << '\n'
+            << std::ranges::count(ss, '#') << std::endl;
 }
