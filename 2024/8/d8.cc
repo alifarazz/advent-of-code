@@ -13,11 +13,7 @@ int main()
   std::array<std::vector<std::pair<int, int>>, 256> antenna_coords {};
   for (size_t i = 0; i < rlen; i++) {
     for (size_t j = 0; j < clen; j++) {
-      auto idx = i * (clen + 1) + j;
-      auto is_antenna = [](const char c) {
-        return ('0' <= c && c <= '9') || ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
-      };
-      if (is_antenna(s[idx]))
+      if (auto idx = i * (clen + 1) + j; (s[idx]) != '.')
         antenna_coords[(std::uint8_t)(s[idx])].emplace_back(i, j);
     }
   }
