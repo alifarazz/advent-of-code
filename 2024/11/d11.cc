@@ -1,21 +1,20 @@
 #include <algorithm>
 #include <cassert>
 #include <charconv>
-#include <iomanip>
 #include <iostream>
 #include <ranges>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 using namespace std::literals;
 
-using StoneLine = std::vector<size_t>;
+using StoneBag = std::unordered_map<size_t, size_t>;
 
-size_t powi(size_t base, unsigned int exp)
+size_t powi(size_t base, size_t exp)
 {
   size_t res = 1;
   while (exp) {
-    if (exp & 1)
+    if (exp % 2 == 1)
       res *= base;
     exp >>= 1;
     base *= base;
@@ -37,20 +36,27 @@ std::tuple<size_t, size_t> split_half(size_t num, size_t digit_len)
   return { num / halfer, num % halfer };
 }
 
-void blink(const StoneLine& src, StoneLine& dst)
+void inc_or_insert_1(StoneBag& bag, size_t key, size_t inc_by = 1ULL)
 {
-  for (auto s : src) {
-    if (s == 0) {
-      dst.push_back(1);
+  auto kv_ok = bag.try_emplace(key, inc_by);
+  if (!kv_ok.second) // did not insert value
+    kv_ok.first->second += inc_by; // incrase count of value (=[key])
+}
+
+void blink(const StoneBag& src, StoneBag& dst)
+{
+  for (auto [sk, sv] : src) {
+    if (sk == 0) {
+      inc_or_insert_1(dst, 1, sv);
       continue;
     }
-    if (auto digit_len = digit_count(s); digit_len % 2 == 0) {
-      auto [l, r] = split_half(s, digit_len);
-      dst.push_back(l);
-      dst.push_back(r);
+    if (auto digit_len = digit_count(sk); digit_len % 2 == 0) {
+      auto [l, r] = split_half(sk, digit_len);
+      inc_or_insert_1(dst, l, sv);
+      inc_or_insert_1(dst, r, sv);
       continue;
     }
-    dst.push_back(s * 2024);
+    inc_or_insert_1(dst, sk * 2024ULL, sv);
   }
 }
 
@@ -60,29 +66,26 @@ int main()
   std::string s = std::string(begin, end);
   s.pop_back();
 
-  StoneLine line1, line2;
-  line1.reserve(1'000'000);
-  line2.reserve(1'000'000);
+  StoneBag bag1, bag2;
   for (const auto word : std::views::split(std::string_view(s), " "sv)) {
     auto word_sv = std::string_view(word);
-    size_t result;
-    auto res = std::from_chars(word_sv.data(), word_sv.data() + word_sv.length(), result);
+    size_t num;
+    auto res = std::from_chars(word_sv.data(), word_sv.data() + word_sv.length(), num);
     assert(res.ec == std::errc());
     assert(res.ptr == word_sv.data() + word_sv.length());
-    line1.push_back(result);
+    inc_or_insert_1(bag1, num);
   }
 
-  for (auto u : line1)
-    std::cout << u << " ";
-  std::cout << std::endl;
-  StoneLine& a = line1, &b = line2;
-  for (size_t i = 0; i < 25; i++) {
-    blink(a, b);
-    std::swap(a, b);
-    b.clear();
-    // for (auto u : line1)
-    //   std::cout << u << " ";
-    // std::cout << std::endl;
-    std::cout << a.size() << std::endl;
+  StoneBag &src = bag1, &dst = bag2;
+  for (size_t i = 0; i < 75; i++) {
+    blink(src, dst);
+    std::swap(src, dst);
+    if (i == 24 || i == 74) {
+      std::cout << std::ranges::fold_left(src, 0ULL, [](size_t acc, auto& kv) {
+        auto [k, v] = kv;
+        return acc + v;
+      }) << '\n';
+    }
+    dst.clear();
   }
 }
