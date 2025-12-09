@@ -3,6 +3,8 @@
 // ./i.elf <input
 #include <algorithm>
 #include <charconv>
+#include <fmt/base.h>
+#include <functional>
 #include <ios>
 #include <iostream>
 #include <string>
@@ -71,12 +73,14 @@ int main() {
   for (size_t i = 0; i < vs.size(); i++)
     dsprnt[i] = i, dssize[i] = 1;
 
-  std::sort(es.begin(), es.end());
+  std::make_heap(es.begin(), es.end(), std::greater<Edge>());
+  auto heap_end = es.end();
 
+  constexpr size_t silver_upper = 1000;
   size_t mst_size = 0;
-  size_t upper = 1000;
-  for (size_t i = 0; i < upper; i++) {
-    auto [d, uv] = es[i];
+  for (size_t i = 0; i < silver_upper; i++) {
+    auto [d, uv] = *es.begin();
+    std::pop_heap(es.begin(), --heap_end, std::greater<Edge>());
     auto [u, v] = uv;
     if (auto fu = ds_find(u), fv = ds_find(v); fu != fv) {
       ds_union(u, v);
@@ -88,12 +92,18 @@ int main() {
       src = 0;
     }
   }
-  std::sort(dssize.begin(), dssize.end(), std::greater<utype>());
-  fmt::println("{}", dssize[0] * dssize[1] * dssize[2]);
+  ssize_t silver = 1;
+  std::make_heap(dssize.begin(), dssize.end());
+  for (size_t i = 0; i < 3; i++) {
+    silver *= *dssize.begin();
+    std::pop_heap(dssize.begin(), dssize.end() - i);
+  }
+  fmt::println("{}", silver);
 
   utype u{}, v{};
-  for (size_t i = upper; mst_size < vs.size() - 1; i++) {
-    auto [d, uv] = es[i];
+  for (size_t i = silver_upper; mst_size < vs.size() - 1; i++) {
+    auto [d, uv] = *es.begin();
+    std::pop_heap(es.begin(), --heap_end, std::greater<Edge>());
     std::tie(u, v) = uv;
     if (auto fu = ds_find(u), fv = ds_find(v); fu != fv) {
       ds_union(u, v);
