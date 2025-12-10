@@ -1,7 +1,7 @@
-// hope you have fmt installed: https://github.com/fmtlib/fmt/
-// and COIN-OR's CBC solver: https://github.com/coin-or/Cbc
-// g++ -Wall -std=c++23 -Ofast -march=native k.cc -o k.elf \
-//                            -lfmt $(pkg-config --libs cbc)
+// bash ../init_env.bash
+// g++ -Wall -std=c++23 -Ofast -march=native \
+//    $(pkg-config --cflags cbc fmt) k.cc -o k.elf \
+//    $(pkg-config --libs cbc clp osi osi-clp osi-cbc fmt)
 // ./k.elf <input
 #include <cassert>
 #include <charconv>
@@ -13,10 +13,10 @@
 
 #include <fmt/base.h>
 
-#include <coin/CbcModel.hpp>
-#include <coin/OsiClpSolverInterface.hpp>
+#include <CbcModel.hpp>
+#include <OsiClpSolverInterface.hpp>
 
-long SolveIP(std::vector<uint32_t> &jolts, std::vector<std::uint32_t> &masks) {
+long SolveLP(std::vector<uint32_t> &jolts, std::vector<std::uint32_t> &masks) {
 
   // min dot(c, x)
   // where c is a vector of constants,
@@ -67,7 +67,7 @@ long SolveIP(std::vector<uint32_t> &jolts, std::vector<std::uint32_t> &masks) {
   }
 
   OsiClpSolverInterface solver; // structure data into clp's format
-  solver.setLogLevel(-1);       // shut up
+  solver.setLogLevel(0);       // shut up
 
   // clang-format off
   solver.loadProblem( 
@@ -90,7 +90,7 @@ long SolveIP(std::vector<uint32_t> &jolts, std::vector<std::uint32_t> &masks) {
     solver.setInteger(i); // var x_i is an integer
 
   CbcModel model(solver);
-  model.setLogLevel(-1); // shut up 2
+  model.setLogLevel(0); // shut up 2
 
   model.initialSolve();   // solve LP
   model.branchAndBound(); // IP branch and bound
@@ -173,7 +173,7 @@ int main() {
     }
     silver += depth + 1;
     // GOLD
-    gold += SolveIP(jolts, masks);
+    gold += SolveLP(jolts, masks);
   }
   fmt::println("{}", silver);
   fmt::println("{}", gold);
