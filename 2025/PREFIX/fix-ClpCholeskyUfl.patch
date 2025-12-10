@@ -1,0 +1,20 @@
+diff --git a/src/ClpCholeskyUfl.cpp b/src/ClpCholeskyUfl.cpp
+index f0dbacdc..7d5214b5 100644
+--- a/src/ClpCholeskyUfl.cpp
++++ b/src/ClpCholeskyUfl.cpp
+@@ -4,7 +4,6 @@
+ 
+ #include "ClpConfig.h"
+ 
+-extern "C" {
+ #ifndef CLP_HAS_CHOLMOD
+ #ifndef CLP_HAS_AMD
+ #error "Need to have AMD or CHOLMOD to compile ClpCholeskyUfl."
+@@ -14,7 +13,6 @@ extern "C" {
+ #else
+ #include "cholmod.h"
+ #endif
+-}
+ 
+ #include "CoinPragma.hpp"
+ #include "ClpCholeskyUfl.hpp"
