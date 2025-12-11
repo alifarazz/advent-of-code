@@ -15,8 +15,8 @@ c++ -Wall -Ofast -march=native -std=c++17 2/a.cc -o 2/a.elf -lfmt
 c++ -Wall -Ofast -march=native -std=c++23 4/d.cc -o 4/d.elf -lfmt
 c++ -Wall -Ofast -march=native -std=c++23 4/dmd.cc -o 4/dmd.elf -lfmt
 c++ -Wall -Ofast -march=native -std=c++23 7/g.cc -o 7/g.elf -lfmt
-c++ -Wall -Ofast -march=native -std=c++23 8/i.cc -o 8/i.elf -lfmt
-c++ -Wall -Ofast -march=native -std=c++23 9/j.cc -o 9/j.elf -lfmt
+c++ -Wall -Ofast -march=native -std=c++23 8/h.cc -o 8/h.elf -lfmt
+c++ -Wall -Ofast -march=native -std=c++23 9/i.cc -o 9/i.elf -lfmt
 
-c++ -Wall -Ofast -march=native -std=c++23 10/k_silver_only.cc -o 10/k_silver_only.elf -lfmt
-c++ -Wall -std=c++23 -Ofast -march=native $(pkg-config --cflags cbc fmt) 10/k.cc -o 10/k.elf $(pkg-config --libs cbc clp osi osi-clp osi-cbc fmt)
+c++ -Wall -Ofast -march=native -std=c++23 10/j_silver_only.cc -o 10/j_silver_only.elf -lfmt
+c++ -Wall -std=c++23 -Ofast -march=native $(pkg-config --cflags cbc fmt) 10/j.cc -o 10/j.elf $(pkg-config --libs cbc clp osi osi-clp osi-cbc fmt)
