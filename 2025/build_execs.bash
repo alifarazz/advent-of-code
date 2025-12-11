@@ -20,3 +20,5 @@ c++ -Wall -Ofast -march=native -std=c++23 9/i.cc -o 9/i.elf -lfmt
 
 c++ -Wall -Ofast -march=native -std=c++23 10/j_silver_only.cc -o 10/j_silver_only.elf -lfmt
 c++ -Wall -std=c++23 -Ofast -march=native $(pkg-config --cflags cbc fmt) 10/j.cc -o 10/j.elf $(pkg-config --libs cbc clp osi osi-clp osi-cbc fmt)
+
+c++ -Wall -Ofast -march=native -std=c++23 11/k.cc -o 11/k.elf -lfmt
