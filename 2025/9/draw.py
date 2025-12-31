@@ -3,6 +3,8 @@
 
 import sys
 
+res = 80
+
 def generate_line_svg(input_filename, output_filename="output.svg"):
     """
     Reads x,y coordinates from a file and generates an SVG file 
@@ -55,8 +57,13 @@ def generate_line_svg(input_filename, output_filename="output.svg"):
         viewbox_width = (max_x - min_x) + (2 * padding)
         viewbox_height = (max_y - min_y) + (2 * padding)
         
+        viewbox_x /= res
+        viewbox_y /= res
+        viewbox_width /= res
+        viewbox_height /= res
+        
         # Format the points string for the SVG polyline element
-        points_str = " ".join([f"{x},{y}" for x, y in points])
+        points_str = " ".join([f"{x/res},{y/res}" for x, y in points])
 
         # 3. Generate the SVG content
         svg_content = f"""<?xml version="1.0" standalone="no"?>
